@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Craig's Fitness Program</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090d;--bg2:#0b0f16;--s1:rgba(255,255,255,0.04);--s2:rgba(255,255,255,0.07);
+  --b:rgba(255,255,255,0.07);--text:#edf0f4;--muted:#4a5568;
+  --neon:#39ff14;--ng:rgba(57,255,20,0.25);--nd:rgba(57,255,20,0.07);
+  --blue:#4fa3ff;--purple:#c77dff;--warn:#ffb347;--red:#ff5c5c;--green:#3ddc84;
+}
+html,body{background:var(--bg);overflow-x:hidden;min-height:100vh}
+.app{font-family:system-ui,-apple-system,sans-serif;color:var(--text);min-height:100vh;background:var(--bg)}
+.hdr{padding:14px 16px 12px;background:linear-gradient(160deg,#0b1422 0%,#070a12 100%);border-bottom:1px solid var(--b);position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-60%;left:-10%;width:50%;height:200%;background:radial-gradient(ellipse,rgba(57,255,20,0.08) 0%,transparent 65%);pointer-events:none}
+.hdr::after{content:'';position:absolute;top:-60%;right:-5%;width:40%;height:180%;background:radial-gradient(ellipse,rgba(79,163,255,0.05) 0%,transparent 65%);pointer-events:none}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;position:relative}
+.logo-title{font-size:18px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--neon);text-shadow:0 0 30px var(--ng),0 0 60px rgba(57,255,20,0.1)}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:2px;text-transform:uppercase}
+.reset-btn{background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.2);color:rgba(255,92,92,0.6);font-size:10px;font-weight:700;padding:6px 13px;border-radius:20px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .2s;font-family:inherit}
+.reset-btn:active{background:rgba(255,92,92,0.15);color:var(--red);box-shadow:0 0 16px rgba(255,92,92,0.2)}
+.tabs{display:flex;overflow-x:auto;background:#060810;border-bottom:1px solid var(--b);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 13px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.05em;transition:all .15s;display:flex;align-items:center;gap:5px;text-transform:uppercase}
+.tab.active{color:var(--neon);border-bottom-color:var(--neon)}
+.tab:hover:not(.active){color:#8899aa}
+.tbadge{display:none;width:16px;height:16px;border-radius:50%;background:rgba(57,255,20,0.12);color:var(--neon);font-size:8px;font-weight:800;align-items:center;justify-content:center}
+.tbadge.on{display:flex}
+.tbadge.full{background:rgba(57,255,20,0.2);color:var(--neon)}
+.panel{display:none}
+.panel.active{display:block}
+.sprog{position:sticky;top:0;z-index:20;padding:10px 16px 8px;background:linear-gradient(180deg,var(--bg2) 70%,transparent)}
+.sp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.sp-title{font-size:14px;font-weight:700;letter-spacing:.02em}
+.sp-right{display:flex;align-items:center;gap:8px}
+.sp-frac{font-size:10px;color:var(--muted)}
+.sp-pct{font-size:12px;font-weight:800;color:var(--neon);letter-spacing:.04em}
+.sp-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-bottom:7px}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--neon),#70ff30);transition:width .45s cubic-bezier(.4,0,.2,1);border-radius:3px}
+.sp-meta{display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;letter-spacing:.03em}
+.bd{background:#0d1d2e;color:var(--blue)}.bs{background:#170d26;color:var(--purple)}
+.bt{background:#0a180a;color:var(--green)}.br{background:#1e1508;color:var(--warn)}
+.sec{padding:0 16px}
+.slbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.slbl span{white-space:nowrap}
+.slbl::after{content:'';flex:1;height:1px;background:var(--b)}
+.slbl.def span{color:var(--muted)}.slbl.neon span{color:var(--neon)}.slbl.blue span{color:var(--blue)}
+.slbl.red span{color:var(--red)}.slbl.warn span{color:var(--warn)}.slbl.green span{color:var(--green)}
+.ec{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:10px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .2s,border-color .2s,opacity .35s,transform .12s}
+.ec:active{transform:scale(0.985)}
+.ec:hover .cb{border-color:rgba(57,255,20,0.4)}
+.ec.chest{background:rgba(57,255,20,0.04);border-color:rgba(57,255,20,0.1)}
+.ec.shoulder{background:rgba(79,163,255,0.04);border-color:rgba(79,163,255,0.1)}
+.ec.stretch{background:rgba(255,255,255,0.015);border-style:dashed;border-color:rgba(255,255,255,0.05)}
+.ec.core-new{background:rgba(57,255,20,0.03);border-color:rgba(57,255,20,0.09)}
+.ec.done{opacity:.42}
+.ec.done .en{text-decoration:line-through;color:var(--muted)}
+.cb{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.ec.done .cb{background:var(--neon);border-color:var(--neon);box-shadow:0 0 14px var(--ng),0 0 28px rgba(57,255,20,0.1)}
+.cb-check{width:11px;height:8px;border-left:2.5px solid #000;border-bottom:2.5px solid #000;transform:rotate(-45deg) scale(0) translateY(-1px);transition:transform .18s ease .04s;border-radius:1px}
+.ec.done .cb-check{transform:rotate(-45deg) scale(1) translateY(-1px)}
+.ec-body{flex:1;min-width:0}
+.en{font-size:13px;font-weight:500;margin-bottom:3px;transition:all .3s}
+.em{display:flex;gap:4px;flex-wrap:wrap}
+.et{font-size:10px;padding:1px 6px;border-radius:10px}
+.et-s{background:rgba(162,155,254,0.1);color:#a29bfe}
+.et-r{background:rgba(61,220,132,0.09);color:var(--green)}
+.et-n{background:rgba(57,255,20,0.09);color:var(--neon)}
+.et-b{background:rgba(79,163,255,0.09);color:var(--blue)}
+.new-tag{font-size:9px;background:rgba(57,255,20,0.15);color:var(--neon);padding:1px 5px;border-radius:8px;margin-left:4px;letter-spacing:.04em}
+.note{border-radius:8px;padding:8px 11px;margin-bottom:5px;font-size:11px;line-height:1.65}
+.note.red{background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.13);border-left:3px solid var(--red);color:#ffaaaa}
+.note.red b{color:var(--red)}
+.note.ok{background:rgba(57,255,20,0.04);border:1px solid rgba(57,255,20,0.1);border-left:3px solid var(--neon);color:#aaffaa}
+.note.ok b{color:var(--neon)}
+.note.tip{background:rgba(255,179,71,0.05);border:1px solid rgba(255,179,71,0.1);border-left:3px solid var(--warn);color:#ffd0a0}
+.note.tip b{color:var(--warn)}
+.done-banner{display:none;margin:10px 16px;padding:14px 16px;border-radius:13px;background:linear-gradient(135deg,rgba(57,255,20,0.1),rgba(57,255,20,0.03));border:1px solid rgba(57,255,20,0.2);text-align:center}
+.done-banner.show{display:block;animation:pop .35s cubic-bezier(.4,0,.2,1)}
+.done-emo{font-size:28px;margin-bottom:3px}
+.done-title{font-size:15px;font-weight:800;color:var(--neon);letter-spacing:.05em;text-shadow:0 0 20px var(--ng)}
+.done-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.sc{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:10px 12px;margin-bottom:5px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:all .25s}
+.sc:active{transform:scale(0.985)}
+.sc.done{opacity:.42}
+.sc.done .sn{text-decoration:line-through;color:var(--muted)}
+.sc-body{flex:1}
+.sc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.sn{font-size:13px;font-weight:500;transition:all .3s}
+.sd{font-size:11px;color:var(--green);font-weight:700}
+.sh{font-size:10px;color:var(--muted);line-height:1.5}
+.sched{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.dc{background:var(--s1);border:1px solid var(--b);border-radius:8px;padding:7px 2px;text-align:center}
+.da{font-size:8px;color:var(--muted);margin-bottom:3px;letter-spacing:.04em}
+.dl{font-size:8px;font-weight:700;line-height:1.6}
+.dl.a{color:var(--blue)}.dl.c{color:var(--green)}.dl.b{color:var(--purple)}
+.dl.w{color:var(--neon)}.dl.h{color:var(--red)}.dl.r{color:#2a2a2a}
+.gbox{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:11px 14px;margin-bottom:10px}
+.gr{padding:5px 0;border-bottom:1px solid var(--b);font-size:11px;line-height:1.6;color:#ccc}
+.gr:last-child{border-bottom:none}
+.gr b{color:var(--warn)}
+.rec{background:rgba(255,179,71,0.04);border:1px solid rgba(255,179,71,0.1);border-left:3px solid var(--warn);border-radius:7px;padding:8px 11px;margin-bottom:5px;font-size:11px;color:#ffd0a0;line-height:1.6}
+.rec b{color:var(--warn)}
+.zone-bar{display:flex;border-radius:8px;overflow:hidden;height:24px;margin:5px 0 9px}
+.z{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex:1}
+.z1{background:#0a1520;color:#6ab4ff}.z2{background:#081e08;color:var(--neon)}
+.z3{background:#121c06;color:#a3e04c}.z4{background:#1c1406;color:var(--warn)}.z5{background:#1c0808;color:var(--red)}
+.zdesc{font-size:10px;color:var(--muted);line-height:2;margin-bottom:10px}
+.walk-card{background:rgba(57,255,20,0.04);border:1px solid rgba(57,255,20,0.1);border-radius:10px;padding:12px 13px;margin-bottom:8px}
+.wt{font-size:13px;font-weight:700;color:var(--neon);margin-bottom:7px;letter-spacing:.03em}
+.wr{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;border-bottom:1px solid rgba(57,255,20,0.07);font-size:11px}
+.wr:last-child{border-bottom:none}
+.wl{color:var(--muted)}.wv{color:var(--text);font-weight:500;text-align:right;max-width:62%}
+.hiit-card{background:rgba(255,92,92,0.04);border:1px solid rgba(255,92,92,0.1);border-radius:10px;padding:12px 13px;margin-bottom:8px}
+.ht{font-size:13px;font-weight:700;color:var(--red);margin-bottom:7px;letter-spacing:.03em}
+.hr2{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,92,92,0.07);font-size:11px}
+.hr2:last-child{border-bottom:none}
+.hp{color:var(--muted)}.hv{font-weight:500}
+.hz{font-size:9px;padding:1px 5px;border-radius:8px;margin-left:3px}
+.hz4{background:#1a1000;color:var(--warn)}.hz1{background:#081420;color:var(--blue)}
+.inc-wrap{background:var(--s1);border:1px solid var(--b);border-radius:9px;padding:10px 13px;margin-bottom:10px}
+.inc-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.inc-viz{display:flex;gap:3px;align-items:flex-end;height:46px}
+.inc-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.inc-bar{width:100%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--neon),#1aaa08);opacity:.65}
+.inc-deg{font-size:8px;color:var(--muted);margin-top:2px}
+.divider{border:none;border-top:1px solid var(--b);margin:10px 16px}
+.pb{padding-bottom:28px}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+const TABS=['Arm A','Arm B','Core','Cardio','Supps','Schedule'];
+const STRETCH=[
+  {id:'st-1',name:'Piriformis Stretch',detail:'30 sec each side'},
+  {id:'st-2',name:'Cat-Cow',detail:'10 slow reps · inhale arch, exhale round'},
+  {id:'st-3',name:'Hip Flexor Stretch',detail:'30 sec each side · kneeling lunge',isNew:true},
+];
+const WK={
+  0:{title:'Arm Day A',day:'Monday',time:'~50 min',sets:'18 sets',rest:'90s rest',
+    secs:[
+      {lbl:'Morning Stretch',type:'stretch',items:STRETCH.map(s=>({...s,id:'a-'+s.id}))},
+      {lbl:'Arms',type:'arm',items:[
+        {id:'a-1',name:'EZ-Bar Curl',sets:'3',reps:'6–8 reps'},
+        {id:'a-2',name:'Hammer Curl',sets:'2',reps:'10–12 reps'},
+        {id:'a-3',name:'Close-Grip Bench Press',sets:'3',reps:'8–10 reps'},
+      ]},
+      {lbl:'Chest',type:'chest',items:[
+        {id:'a-4',name:'Flat Bench Press',sets:'3',reps:'8–10 reps'},
+        {id:'a-5',name:'45° Incline Press',sets:'3',reps:'8–10 reps'},
+        {id:'a-6',name:'Dumbbell Fly',sets:'2',reps:'12–15 reps'},
+      ]},
+      {lbl:'Shoulders',type:'shoulder',items:[
+        {id:'a-7',name:'Face Pulls',sets:'3',reps:'15 reps',isNew:true},
+        {id:'a-8',name:'Lateral Raises',sets:'3',reps:'12–15 reps',isNew:true},
+      ]},
+    ],
+    notes:[
+      {t:'<b>Close-Grip Bench:</b> Elbows at 45° — never flare wide or strain wrists.',c:'red'},
+      {t:'<b>Face Pulls:</b> Thumbs point behind head, pull to eye level. Protects your rotator cuff against all that pressing volume.',c:'red'},
+      {t:'<b>Dumbbell Fly:</b> Slight elbow bend throughout. Stop at a comfortable stretch — pain at the bottom means you\'ve gone too far.',c:'red'},
+      {t:'<b>Overload:</b> +1 rep or +2.5 lbs per week on all Arms & Chest. Stop 1–2 reps short of failure every set.',c:'ok'},
+    ]
+  },
+  1:{title:'Arm Day B',day:'Thursday',time:'~50 min',sets:'18 sets',rest:'90s rest',
+    secs:[
+      {lbl:'Morning Stretch',type:'stretch',items:STRETCH.map(s=>({...s,id:'b-'+s.id}))},
+      {lbl:'Arms',type:'arm',items:[
+        {id:'b-1',name:'Incline Dumbbell Curl',sets:'3',reps:'10–12 reps'},
+        {id:'b-2',name:'Cable Curl',sets:'2',reps:'12–15 reps'},
+        {id:'b-3',name:'Overhead Tricep Ext.',sets:'3',reps:'10–12 reps'},
+      ]},
+      {lbl:'Chest',type:'chest',items:[
+        {id:'b-4',name:'Flat Bench Press',sets:'3',reps:'8–10 reps'},
+        {id:'b-5',name:'45° Incline Press',sets:'3',reps:'8–10 reps'},
+        {id:'b-6',name:'Dumbbell Fly',sets:'2',reps:'12–15 reps'},
+      ]},
+      {lbl:'Shoulders',type:'shoulder',items:[
+        {id:'b-7',name:'Face Pulls',sets:'3',reps:'15 reps',isNew:true},
+        {id:'b-8',name:'Lateral Raises',sets:'3',reps:'12–15 reps',isNew:true},
+      ]},
+    ],
+    notes:[
+      {t:'<b>Overhead Tricep Ext:</b> Elbows point straight up, pressed close to head. All movement at the elbow.',c:'red'},
+      {t:'<b>Incline Curl:</b> Full stretch at bottom — that eccentric load is where most bicep growth happens.',c:'red'},
+      {t:'<b>Cable Curl:</b> Upper arms pinned still. Squeeze at the top, slow on the way down.',c:'tip'},
+      {t:'<b>Overload:</b> +1 rep or +2.5 lbs weekly. Always leave 1–2 reps in the tank.',c:'ok'},
+    ]
+  },
+  2:{title:'Core & Back',day:'Tue & Fri',time:'~35 min',sets:'All sets',rest:'90s rest',
+    secs:[
+      {lbl:'Morning Stretch',type:'stretch',items:STRETCH.map(s=>({...s,id:'c-'+s.id}))},
+      {lbl:'Core & Back',type:'core',items:[
+        {id:'c-1',name:'Forearm Plank',sets:'3',reps:'20–45 sec'},
+        {id:'c-2',name:'Dead Bug',sets:'3',reps:'8–10/side'},
+        {id:'c-3',name:'Bird Dog',sets:'3',reps:'8–10/side'},
+        {id:'c-4',name:'Glute Bridge',sets:'3',reps:'12–15 reps'},
+        {id:'c-5',name:'Pallof Press',sets:'3',reps:'10/side'},
+        {id:'c-6',name:'Goblet Squat',sets:'3',reps:'10–12 reps'},
+        {id:'c-7',name:'Single-Arm DB Row',sets:'3',reps:'8–10/side'},
+        {id:'c-8',name:'Reverse Lunge + Rotation',sets:'3',reps:'8–10/side',isNew:true,type:'core-new'},
+        {id:'c-9',name:'Toe Touches',sets:'3',reps:'12–15 reps'},
+      ]},
+    ],
+    notes:[
+      {t:'<b>Dead Bug:</b> Lower back pressed into the floor at ALL times. Exhale as you extend.',c:'red'},
+      {t:'<b>Pallof Press:</b> Anti-rotation exercise — resist the cable pull. Hips and shoulders stay perfectly square.',c:'red'},
+      {t:'<b>Reverse Lunge + Rotation:</b> Rotate toward the front (lunging) leg as you lower. Core braced — lower back neutral.',c:'red'},
+      {t:'<b>DB Row correctly placed here:</b> Back/lat exercise with heavy core anti-rotation demand. Moving it to Arm Days would double-load biceps already taxed by curl variations.',c:'ok'},
+      {t:'<b>Overload:</b> +1 rep or +5 seconds each week on all core exercises.',c:'ok'},
+    ]
+  }
+};
+const SUPPS={
+  morning:[
+    {id:'sm-1',name:'Creatine',dose:'5 g',hint:'Any time of day — consistency beats perfect timing. 3–4 weeks to full saturation.'},
+    {id:'sm-2',name:'D3 + K2',dose:'5000 IU + 100 mcg',hint:'Take with a fatty meal — fat-soluble. Verify your formula uses K2 MK-7 form specifically.'},
+    {id:'sm-3',name:'Zinc',dose:'30 mg',hint:'Take with food to avoid nausea. ⚠ Must be 8+ hours before Magnesium.'},
+    {id:'sm-4',name:'B12 Sublingual',dose:'1000–2000 mcg',hint:'Place under tongue · allow to FULLY dissolve · do NOT swallow · bypasses stomach acid entirely.'},
+  ],
+  bedtime:[
+    {id:'sb-1',name:'Magnesium Glycinate',dose:'400 mg',hint:'Gentlest form, best absorbed. 30–60 min before bed. ⚠ Must be 8+ hours after Zinc.'},
+  ]
+};
+const ST={};
+let activeTab=0;
+function initST(){
+  [0,1,2].forEach(t=>{ST[t]={};WK[t].secs.forEach(s=>s.items.forEach(i=>ST[t][i.id]=false));});
+  ST.s={};[...SUPPS.morning,...SUPPS.bedtime].forEach(s=>ST.s[s.id]=false);
+}
+function chk(){return`<div class="cb"><div class="cb-check"></div></div>`;}
+function prog(tabId){
+  if(tabId==='s'){const ids=Object.keys(ST.s);return{done:ids.filter(k=>ST.s[k]).length,total:ids.length};}
+  const ids=Object.keys(ST[tabId]);return{done:ids.filter(k=>ST[tabId][k]).length,total:ids.length};
+}
+function ecClass(sec,item){
+  if(sec.type==='stretch')return'stretch';if(sec.type==='chest')return'chest';
+  if(sec.type==='shoulder')return'shoulder';if(item.type==='core-new')return'core-new';return'';
+}
+function repsTagClass(type){
+  if(type==='chest')return'et-n';if(type==='shoulder')return'et-b';return'et-r';
+}
+function rWorkout(t){
+  const d=WK[t];const{done,total}=prog(t);const pct=total?Math.round(done/total*100):0;
+  let h=`<div class="sprog"><div class="sp-row"><span class="sp-title">${d.title}</span><div class="sp-right"><span class="sp-frac" id="frac-${t}">${done}/${total}</span><span class="sp-pct" id="pct-${t}">${pct}%</span></div></div><div class="sp-bar"><div class="sp-fill" id="fill-${t}" style="width:${pct}%;${pct>0?'box-shadow:0 0 8px var(--ng)':''}"></div></div><div class="sp-meta"><span class="badge bd">${d.day}</span><span class="badge bs">${d.sets}</span><span class="badge bt">${d.time}</span><span class="badge br">${d.rest}</span></div></div>`;
+  h+=`<div id="dbanner-${t}" class="done-banner${done===total&&total>0?' show':''}"><div class="done-emo">🔥</div><div class="done-title">Workout Complete!</div><div class="done-sub">${done}/${total} done · Tap Reset to start fresh</div></div>`;
+  h+=`<div class="sec">`;
+  d.secs.forEach(sec=>{
+    const lc=sec.type==='chest'?'neon':sec.type==='shoulder'?'blue':'def';
+    h+=`<div class="slbl ${lc}"><span>${sec.lbl}</span></div>`;
+    sec.items.forEach(item=>{
+      const done=ST[t][item.id];const ec=ecClass(sec,item);const rt=repsTagClass(sec.type);
+      h+=`<div class="ec ${ec}${done?' done':''}" data-t="${t}" data-id="${item.id}">${chk()}<div class="ec-body"><div class="en">${item.name}${item.isNew?'<span class="new-tag">NEW</span>':''}</div><div class="em">${item.sets?`<span class="et et-s">${item.sets} sets</span>`:''}${item.reps?`<span class="et ${rt}">${item.reps}</span>`:''}${item.detail?`<span class="et et-r">${item.detail}</span>`:''}</div></div></div>`;
+    });
+  });
+  if(d.notes){
+    h+=`<div class="slbl red"><span>Key Notes</span></div>`;
+    d.notes.forEach(n=>h+=`<div class="note ${n.c}">${n.t}</div>`);
+  }
+  h+=`</div><div class="pb"></div>`;return h;
+}
+function rSupps(){
+  const{done,total}=prog('s');const pct=total?Math.round(done/total*100):0;
+  let h=`<div class="sprog"><div class="sp-row"><span class="sp-title">Supplements</span><div class="sp-right"><span class="sp-frac" id="frac-s">${done}/${total}</span><span class="sp-pct" id="pct-s">${pct}%</span></div></div><div class="sp-bar"><div class="sp-fill" id="fill-s" style="width:${pct}%;${pct>0?'box-shadow:0 0 8px var(--ng)':''}"></div></div></div>`;
+  h+=`<div id="dbanner-s" class="done-banner${done===total&&total>0?' show':''}"><div class="done-emo">✅</div><div class="done-title">Daily Stack Complete!</div><div class="done-sub">All supplements taken</div></div>`;
+  h+=`<div class="sec"><div class="slbl green"><span>☀️ Morning — with food</span></div>`;
+  SUPPS.morning.forEach(s=>{
+    const d=ST.s[s.id];
+    h+=`<div class="sc${d?' done':''}" data-sid="${s.id}">${chk()}<div class="sc-body"><div class="sc-row"><span class="sn">${s.name}</span><span class="sd">${s.dose}</span></div><div class="sh">${s.hint}</div></div></div>`;
+  });
+  h+=`<div class="slbl" style="margin-top:14px"><span style="color:#6a7aaa">🌙 Bedtime</span></div>`;
+  SUPPS.bedtime.forEach(s=>{
+    const d=ST.s[s.id];
+    h+=`<div class="sc${d?' done':''}" data-sid="${s.id}">${chk()}<div class="sc-body"><div class="sc-row"><span class="sn">${s.name}</span><span class="sd">${s.dose}</span></div><div class="sh">${s.hint}</div></div></div>`;
+  });
+  h+=`<div class="slbl red"><span>Key Notes</span></div>
+  <div class="note red"><b>⚠ Zinc + Magnesium — 8 hours apart minimum:</b> Both compete for the same intestinal absorption transporters. Morning Zinc / Bedtime Mag is correct — do not change this timing.</div>
+  <div class="note red"><b>B12 Sublingual — do NOT swallow:</b> The sublingual form bypasses stomach acid. Swallowing destroys the absorption advantage entirely.</div>
+  <div class="note tip"><b>D3 + K2 MK-7:</b> Confirm your formula specifies MK-7. K2 directs calcium to bones and away from artery walls — critical when taking high-dose D3.</div>
+  <div class="note tip"><b>Creatine — no cycling needed:</b> 5g/day indefinitely. Saturates in 3–4 weeks.</div>
+  <div class="note tip"><b>Consider adding — Omega-3 2–3g EPA+DHA daily:</b> Reduces systemic inflammation, supports heart health and muscle recovery. High priority at 60+.</div>
+  <div class="note tip"><b>Consider adding — CoQ10 100–200mg with D3:</b> Mitochondrial energy and cardiovascular support. Synergistic with D3 timing.</div>
+  </div><div class="pb"></div>`;return h;
+}
+function rCardio(){
+  return`<div class="sec" style="padding-top:10px">
+  <div class="sp-title" style="font-size:14px;font-weight:700;margin-bottom:10px">Cardio</div>
+  <div class="slbl def"><span>Heart Rate Zones · Est. Max HR 158 bpm</span></div>
+  <div class="zone-bar"><div class="z z1">Z1</div><div class="z z2">Z2 ★</div><div class="z z3">Z3</div><div class="z z4">Z4</div><div class="z z5">Z5</div></div>
+  <div class="zdesc"><span style="color:var(--blue)">Z1 · Recovery · 79–95</span> &nbsp;·&nbsp; <span style="color:var(--neon)">Z2 · Fat Burn · 95–111 ★ Walk target</span><br><span style="color:#a3e04c">Z3 · Aerobic · 111–126</span> &nbsp;·&nbsp; <span style="color:var(--warn)">Z4 · Threshold · 126–142</span> &nbsp;·&nbsp; <span style="color:var(--red)">Z5 · Max · 142–158</span></div>
+  <div class="slbl neon"><span>Zone 2 Walk · Wed / Sat / Sun</span></div>
+  <div class="walk-card"><div class="wt">Zone 2 Treadmill Walk</div><div class="wr"><span class="wl">Duration</span><span class="wv">25–30 min</span></div><div class="wr"><span class="wl">Target HR</span><span class="wv" style="color:var(--neon)">95–111 bpm · Zone 2</span></div><div class="wr"><span class="wl">Talk test</span><span class="wv">Full sentences only — if you can't, lower incline or slow pace</span></div><div class="wr"><span class="wl">Incline protocol</span><span class="wv">Rotate 1°→2°→3°→4°→5°→6° every minute, repeat cycle</span></div></div>
+  <div class="inc-wrap"><div class="inc-lbl">Incline rotation per minute</div><div class="inc-viz" id="incviz"></div></div>
+  <div class="slbl red"><span>HIIT · Saturday · after walk</span></div>
+  <div class="hiit-card"><div class="ht">10-Minute HIIT Protocol</div><div class="hr2"><span class="hp">Warm-up</span><span class="hv">2 min easy walk <span class="hz hz1">Z1</span></span></div><div class="hr2"><span class="hp">Work · 6 rounds</span><span class="hv">30 sec max effort <span class="hz hz4">Z4–5</span></span></div><div class="hr2"><span class="hp">Rest · 6 rounds</span><span class="hv">30 sec easy walk <span class="hz hz1">Z1</span></span></div><div class="hr2"><span class="hp">Cool-down</span><span class="hv">2 min easy walk <span class="hz hz1">Z1</span></span></div></div>
+  <div class="slbl red"><span>Key Notes</span></div>
+  <div class="note red"><b>Zone 2 is a ceiling, not a floor:</b> If HR rises above 111, drop incline or slow pace immediately. Zone 3+ burns glycogen, not fat.</div>
+  <div class="note red"><b>HIIT recovery rule:</b> If fatigued or sore on Saturday, skip HIIT and do Zone 2 only.</div>
+  <div class="note tip"><b>Hydration:</b> 16–20 oz water before any cardio session. Daily goal: half your bodyweight in oz.</div>
+  </div><div class="pb"></div>`;
+}
+function rSchedule(){
+  return`<div class="sec" style="padding-top:12px">
+  <div class="sp-title" style="font-size:14px;font-weight:700;margin-bottom:10px">Weekly Schedule</div>
+  <div class="sched">
+    <div class="dc"><div class="da">MON</div><div class="dl a">Arm A</div><div class="dl a">+Chest</div></div>
+    <div class="dc"><div class="da">TUE</div><div class="dl c">Core</div></div>
+    <div class="dc"><div class="da">WED</div><div class="dl w">Walk</div><div class="dl w">Zone 2</div></div>
+    <div class="dc"><div class="da">THU</div><div class="dl b">Arm B</div><div class="dl b">+Chest</div></div>
+    <div class="dc"><div class="da">FRI</div><div class="dl c">Core</div></div>
+    <div class="dc"><div class="da">SAT</div><div class="dl w">Walk</div><div class="dl h">+HIIT</div></div>
+    <div class="dc"><div class="da">SUN</div><div class="dl w">Walk</div><div class="dl w">Zone 2</div></div>
+  </div>
+  <div class="note ok" style="margin-bottom:10px"><b>Every day:</b> Piriformis stretch (30s/side) + Cat-Cow (10 reps) + Hip Flexor Stretch (30s/side)</div>
+  <div class="slbl warn"><span>Golden Rules</span></div>
+  <div class="gbox">
+    <div class="gr"><b>Arms & Chest</b> — +1 rep or +2.5 lbs every week</div>
+    <div class="gr"><b>Core</b> — +1 rep or +5 seconds every week</div>
+    <div class="gr"><b>Walk</b> — stay Zone 2 (95–111 bpm), rotate incline 1°→6° per minute</div>
+    <div class="gr"><b>HIIT</b> — Saturday only, 10 min after walk, push Zone 4–5 on work intervals</div>
+  </div>
+  <div class="slbl warn"><span>Recommendations</span></div>
+  <div class="rec"><b>✓ Face Pulls + Lateral Raises added:</b> Push/pull shoulder imbalance from chest pressing 2x/week is now corrected on both Arm Days.</div>
+  <div class="rec"><b>✓ Hip Flexor Stretch added:</b> Now in every workout warm-up. Critical for sciatica — tight hip flexors tilt the pelvis and directly aggravate the sciatic nerve.</div>
+  <div class="rec"><b>Add Omega-3 (2–3g EPA+DHA) daily:</b> Reduces systemic inflammation, supports cardiovascular health and muscle recovery. Among the highest-value additions at 60+.</div>
+  <div class="rec"><b>Add CoQ10 (100–200mg with D3):</b> Mitochondrial energy and heart health support.</div>
+  </div><div class="pb"></div>`;
+}
+function render(){
+  document.getElementById('app').innerHTML=`
+  <div class="hdr"><div class="hdr-row"><div><div class="logo-title">Craig's Fitness</div><div class="logo-sub">Personalized Program · v4.0</div></div><button class="reset-btn" id="resetbtn">↺ Reset</button></div></div>
+  <div class="tabs" id="tabs">${TABS.map((t,i)=>`<div class="tab${i===activeTab?' active':''}" data-ti="${i}">${t}<span class="tbadge" id="tb${i}"></span></div>`).join('')}</div>
+  <div id="panel-0" class="panel${activeTab===0?' active':''}">${rWorkout(0)}</div>
+  <div id="panel-1" class="panel${activeTab===1?' active':''}">${rWorkout(1)}</div>
+  <div id="panel-2" class="panel${activeTab===2?' active':''}">${rWorkout(2)}</div>
+  <div id="panel-3" class="panel${activeTab===3?' active':''}">${rCardio()}</div>
+  <div id="panel-4" class="panel${activeTab===4?' active':''}">${rSupps()}</div>
+  <div id="panel-5" class="panel${activeTab===5?' active':''}">${rSchedule()}</div>`;
+  buildIncline();updateAllBadges();wireEvents();
+}
+function buildIncline(){
+  const v=document.getElementById('incviz');if(!v)return;
+  const H=[14,23,32,42,53,65],L=['1°','2°','3°','4°','5°','6°'];v.innerHTML='';
+  H.forEach((h,i)=>{const c=document.createElement('div');c.className='inc-col';c.innerHTML=`<div class="inc-bar" style="height:${h}px"></div><div class="inc-deg">${L[i]}</div>`;v.appendChild(c);});
+}
+function wireEvents(){
+  document.getElementById('tabs').addEventListener('click',e=>{const tab=e.target.closest('[data-ti]');if(tab)switchTab(parseInt(tab.dataset.ti));});
+  document.getElementById('resetbtn').addEventListener('click',resetCurrent);
+  document.getElementById('app').addEventListener('click',e=>{
+    const ec=e.target.closest('.ec[data-t][data-id]');if(ec){toggleItem(parseInt(ec.dataset.t),ec.dataset.id,ec);return;}
+    const sc=e.target.closest('.sc[data-sid]');if(sc){toggleSupp(sc.dataset.sid,sc);}
+  });
+}
+function switchTab(i){
+  activeTab=i;
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+  if(i===3)buildIncline();
+}
+function toggleItem(t,id,el){ST[t][id]=!ST[t][id];if(el)el.classList.toggle('done',ST[t][id]);updateProg(t);}
+function toggleSupp(id,el){ST.s[id]=!ST.s[id];if(el)el.classList.toggle('done',ST.s[id]);updateSuppProg();}
+function updateProg(t){
+  const{done,total}=prog(t);const pct=total?Math.round(done/total*100):0;
+  const fill=document.getElementById('fill-'+t);const pctEl=document.getElementById('pct-'+t);const fracEl=document.getElementById('frac-'+t);
+  if(fill){fill.style.width=pct+'%';fill.style.boxShadow=pct>0?'0 0 8px var(--ng)':'';}
+  if(pctEl)pctEl.textContent=pct+'%';if(fracEl)fracEl.textContent=done+'/'+total;
+  const banner=document.getElementById('dbanner-'+t);
+  if(banner){const show=done===total&&total>0;banner.classList.toggle('show',show);if(show&&banner.querySelector('.done-sub'))banner.querySelector('.done-sub').textContent=done+'/'+total+' done · Tap Reset to start fresh';}
+  updateBadge(t,done,total);
+}
+function updateSuppProg(){
+  const{done,total}=prog('s');const pct=total?Math.round(done/total*100):0;
+  const fill=document.getElementById('fill-s');const pctEl=document.getElementById('pct-s');const fracEl=document.getElementById('frac-s');
+  if(fill){fill.style.width=pct+'%';fill.style.boxShadow=pct>0?'0 0 8px var(--ng)':'';}
+  if(pctEl)pctEl.textContent=pct+'%';if(fracEl)fracEl.textContent=done+'/'+total;
+  const banner=document.getElementById('dbanner-s');if(banner)banner.classList.toggle('show',done===total&&total>0);
+  updateBadge('s',done,total);
+}
+function updateBadge(key,done,total){
+  const idx=key==='s'?4:key;const dot=document.getElementById('tb'+idx);if(!dot)return;
+  if(done===total&&total>0){dot.textContent='✓';dot.classList.add('on','full');}
+  else if(done>0){dot.textContent=done;dot.classList.add('on');dot.classList.remove('full');}
+  else{dot.textContent='';dot.classList.remove('on','full');}
+}
+function updateAllBadges(){[0,1,2].forEach(t=>{const{done,total}=prog(t);updateBadge(t,done,total);});const{done,total}=prog('s');updateBadge('s',done,total);}
+function resetCurrent(){
+  if(activeTab<=2){const t=activeTab;Object.keys(ST[t]).forEach(k=>ST[t][k]=false);const p=document.getElementById('panel-'+t);if(p)p.innerHTML=rWorkout(t);updateBadge(t,0,Object.keys(ST[t]).length);}
+  else if(activeTab===4){Object.keys(ST.s).forEach(k=>ST.s[k]=false);const p=document.getElementById('panel-4');if(p)p.innerHTML=rSupps();updateBadge('s',0,Object.keys(ST.s).length);}
+  wireEvents();
+}
+initST();render();
+</script>
+</body>
+</html>
