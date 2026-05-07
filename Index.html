@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Craig's Fitness Program</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090d;--bg2:#0b0f16;--s1:rgba(255,255,255,0.04);--b:rgba(255,255,255,0.07);
+  --text:#edf0f4;--muted:#8899aa;--neon:#39ff14;--ng:rgba(57,255,20,0.25);
+  --blue:#4fa3ff;--purple:#c77dff;--warn:#ffb347;--red:#ff5c5c;--green:#3ddc84;
+}
+html,body{background:var(--bg);overflow-x:hidden}
+.app{font-family:system-ui,-apple-system,sans-serif;color:var(--text);min-height:100vh}
+.hdr{padding:14px 16px 12px;background:linear-gradient(160deg,#0b1422 0%,#070a12 100%);border-bottom:1px solid var(--b);position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-60%;left:-10%;width:50%;height:200%;background:radial-gradient(ellipse,rgba(57,255,20,0.08) 0%,transparent 65%);pointer-events:none}
+.hdr::after{content:'';position:absolute;top:-60%;right:-5%;width:40%;height:180%;background:radial-gradient(ellipse,rgba(79,163,255,0.05) 0%,transparent 65%);pointer-events:none}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;position:relative}
+.logo{font-size:18px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--neon);text-shadow:0 0 30px var(--ng),0 0 60px rgba(57,255,20,0.1)}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:2px;text-transform:uppercase}
+.reset-btn{background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.2);color:rgba(255,92,92,0.6);font-size:10px;font-weight:700;padding:6px 13px;border-radius:20px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;transition:all .2s}
+.reset-btn:active{background:rgba(255,92,92,0.15);color:var(--red)}
+.tabs{display:flex;overflow-x:auto;background:#060810;border-bottom:1px solid var(--b);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 10px;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.06em;transition:all .15s;display:flex;align-items:center;gap:4px;text-transform:uppercase}
+.tab.active{color:var(--neon);border-bottom-color:var(--neon)}
+.tab:hover:not(.active){color:#aabbcc}
+.tbadge{display:none;width:15px;height:15px;border-radius:50%;background:rgba(57,255,20,0.12);color:var(--neon);font-size:8px;font-weight:800;align-items:center;justify-content:center}
+.tbadge.on{display:flex}.tbadge.full{background:rgba(57,255,20,0.25)}
+.panel{display:none}.panel.active{display:block}
+.sprog{position:sticky;top:0;z-index:20;padding:10px 16px 8px;background:linear-gradient(180deg,var(--bg2) 75%,transparent)}
+.sp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.sp-title{font-size:15px;font-weight:700}
+.sp-sub{font-size:10px;color:var(--muted);margin-bottom:5px}
+.sp-right{display:flex;align-items:center;gap:8px}
+.sp-frac{font-size:10px;color:var(--muted)}.sp-pct{font-size:12px;font-weight:800;color:var(--neon)}
+.sp-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-bottom:7px}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--neon),#70ff30);transition:width .45s cubic-bezier(.4,0,.2,1);border-radius:3px}
+.sp-meta{display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600}
+.bd{background:#0d1d2e;color:var(--blue)}.bs{background:#170d26;color:var(--purple)}
+.bt{background:#0a180a;color:var(--green)}.br{background:#1e1508;color:var(--warn)}
+.sec{padding:0 16px}
+.slbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.slbl span{white-space:nowrap}.slbl::after{content:'';flex:1;height:1px;background:var(--b)}
+.slbl.def span{color:var(--muted)}.slbl.neon span{color:var(--neon)}.slbl.blue span{color:var(--blue)}
+.slbl.red span{color:var(--red)}.slbl.warn span{color:var(--warn)}.slbl.green span{color:var(--green)}
+.slbl.vit span{color:var(--warn)}.slbl.bed span{color:#6a7aaa}.slbl.legs span{color:var(--purple)}
+.slbl.str span{color:var(--blue)}
+.ec{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:10px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.ec:active{transform:scale(0.985)}.ec:hover .cb{border-color:rgba(57,255,20,0.4)}
+.ec.chest{background:rgba(57,255,20,0.04);border-color:rgba(57,255,20,0.1)}
+.ec.shoulder{background:rgba(79,163,255,0.04);border-color:rgba(79,163,255,0.1)}
+.ec.stretch{background:rgba(79,163,255,0.04);border-color:rgba(79,163,255,0.08)}
+.ec.vit{background:rgba(255,179,71,0.04);border-color:rgba(255,179,71,0.1)}
+.ec.legs{background:rgba(199,125,255,0.04);border-color:rgba(199,125,255,0.1)}
+.ec.walk{background:rgba(57,255,20,0.04);border-color:rgba(57,255,20,0.1)}
+.ec.hiit{background:rgba(255,92,92,0.04);border-color:rgba(255,92,92,0.1)}
+.ec.bed{background:rgba(106,122,170,0.04);border-color:rgba(106,122,170,0.1)}
+.ec.single{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)}
+.ec.done{opacity:.42}.ec
