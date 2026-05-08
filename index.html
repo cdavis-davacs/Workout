@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<!-- ============================================
+     CRAIG'S FITNESS APP — VERSION 6.0
+     Last updated: May 2026
+     Tabs: MON TUE WED THU FRI SAT SUN VITAMINS STRETCHES CARDIO SCHEDULE
+============================================ -->
+<title>Craig's Fitness — v6.0</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090d;--bg2:#0b0f16;--s1:rgba(255,255,255,0.04);--b:rgba(255,255,255,0.07);
+  --text:#edf0f4;--muted:#8899aa;--neon:#39ff14;--ng:rgba(57,255,20,0.25);
+  --blue:#4fa3ff;--purple:#c77dff;--warn:#ffb347;--red:#ff5c5c;--green:#3ddc84;
+}
+html,body{background:var(--bg);overflow-x:hidden}
+.app{font-family:system-ui,-apple-system,sans-serif;color:var(--text);min-height:100vh}
+.hdr{padding:14px 16px 12px;background:linear-gradient(160deg,#0b1422 0%,#070a12 100%);border-bottom:1px solid var(--b);position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-60%;left:-10%;width:50%;height:200%;background:radial-gradient(ellipse,rgba(57,255,20,0.08) 0%,transparent 65%);pointer-events:none}
+.hdr::after{content:'';position:absolute;top:-60%;right:-5%;width:40%;height:180%;background:radial-gradient(ellipse,rgba(79,163,255,0.05) 0%,transparent 65%);pointer-events:none}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;position:relative}
+.logo{font-size:18px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--neon);text-shadow:0 0 30px var(--ng),0 0 60px rgba(57,255,20,0.1)}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:2px;text-transform:uppercase}
+.version-pill{font-size:9px;font-weight:800;background:rgba(57,255,20,0.12);color:var(--neon);border:1px solid rgba(57,255,20,0.3);padding:2px 7px;border-radius:20px;letter-spacing:.08em;margin-top:3px;display:inline-block}
+.reset-btn{background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.2);color:rgba(255,92,92,0.6);font-size:10px;font-weight:700;padding:6px 13px;border-radius:20px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;transition:all .2s}
+.reset-btn:active{background:rgba(255,92,92,0.15);color:var(--red)}
+.tabs{display:flex;overflow-x:auto;background:#060810;border-bottom:1px solid var(--b);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 10px;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.06em;transition:all .15s;display:flex;align-items:center;gap:4px;text-transform:uppercase}
+.tab.active{color:var(--neon);border-bottom-color:var(--neon)}
+.tab:hover:not(.active){color:#aabbcc}
+.tbadge{display:none;width:15px;height:15px;border-radius:50%;background:rgba(57,255,20,0.12);color:var(--neon);font-size:8px;font-weight:800;align-items:center;justify-content:center}
+.tbadge.on{display:flex}.tbadge.full{background:rgba(57,255,20,0.25)}
+.panel{display:none}.panel.active{display:block}
+.sprog{position:sticky;top:0;z-index:20;padding:10px 16px 8px;background:linear-gradient(180deg,var(--bg2) 75%,transparent)}
+.sp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.sp-title{font-size:15px;font-weight:700}
+.sp-sub{font-size:10px;color:var(--muted);margin-bottom:5px}
+.sp-right{display:flex;align-items:center;gap:8px}
+.sp-frac{font-size:10px;color:var(--muted)}.sp-pct{font-size:12px;font-weight:800;color:var(--neon)}
+.sp-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-bottom:7px}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--neon),#70ff30);transition:width .45s cubic-bezier(.4,0,.2,1);border-radius:3px}
+.sp-meta{display:flex;gap:4px;flex-wrap:wrap}
+.badge{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600}
+.bd{background:#0d1d2e;color:var(--blue)}.bs{background:#170d26;color:var(--purple)}
+.bt{background:#0a180a;color:var(--green)}.br{background:#1e1508;color:var(--warn)}
+.sec{padding:0 16px}
+.slbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.slbl span{white-space:nowrap}.slbl::after{content:'';flex:1;height:1px;background:var(--b)}
+.slbl.def span{color:var(--muted)}.slbl.neon span{color:var(--neon)}.slbl.blue span{color:var(--blue)}
+.slbl.red span{color:var(--red)}.slbl.warn span{color:var(--warn)}.slbl.green span{color:var(--green)}
+.slbl.vit span{color:var(--warn)}.slbl.bed span{color:#6a7aaa}.slbl.legs span{color:var(--purple)}.slbl.str span{color:var(--blue)}
+.ec{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:10px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.ec:active{transform:scale(0.985)}.ec:hover .cb{border-color:rgba(57,255,20,0.4)}
+.ec.chest{background:rgba(57,255,20,0.04);border-color:rgba(57,255,20,0.1)}
+.ec.shoulder{background:rgba(79,163,255,0.04);border-color:rgba(79,163,255,0.1)}
+.ec.stretch{background:rgba(79,163,255,0.04);border-color:rgba(79,163,255,0.08)}
+.ec.vit{background:rgba(255,179,71,0.04);border-color:rgba(255,179,71,0.1)}
+.ec.legs{background:rgba(199,125,255,0.04);border-color:rgba(199,125,255,0.1)}
+.ec.walk{background:rgba(57,255,20,0.04);border-color:rgba(57,255,20,0.1)}
+.ec.hiit{background:rgba(255,92,92,0.04);border-color:rgba(255,92,92,0.1)}
+.ec.bed{background:rgba(106,122,170,0.04);border-color:rgba(106,122,170,0.1)}
+.ec.single{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)}
+.ec.done{opacity:.42}.ec.done .en{text-decoration:line-through;color:var(--muted)}
+.cb{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.ec.done .cb{background:var(--neon);border-color:var(--neon);box-shadow:0 0 14px var(--ng),0 0 28px rgba(57,255,20,0.1)}
+.cb-check{width:11px;height:8px;border-left:2.5px solid #000;border-bottom:2.5px solid #000;transform:rotate(-45deg) scale(0) translateY(-1px);transition:transform .18s ease .04s;border-radius:1px}
+.ec.done .cb-check{transform:rotate(-45deg) scale(1) translateY(-1px)}
+.ec-body{flex:1;min-width:0}
+.en{font-size:13px;font-weight:500;margin-bottom:3px;transition:all .3s}
+.em{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.et{font-size:10px;padding:1px 6px;border-radius:10px}
+.et-s{background:rgba(162,155,254,0.1);color:#a29bfe}
+.et-r{background:rgba(61,220,132,0.09);color:var(--green)}
+.et-n{background:rgba(57,255,20,0.09);color:var(--neon)}
+.et-b{background:rgba(79,163,255,0.09);color:var(--blue)}
+.et-p{background:rgba(199,125,255,0.09);color:var(--purple)}
+.et-dose{background:rgba(255,179,71,0.12);color:#ffc87a;font-weight:700}
+.new-tag{font-size:9px;background:rgba(57,255,20,0.15);color:var(--neon);padding:1px 5px;border-radius:8px;margin-left:4px}
+.ec-hint{font-size:11px;color:#9ab0c8;margin-top:4px;line-height:1.5}
+.done-banner{display:none;margin:10px 16px;padding:14px 16px;border-radius:13px;background:linear-gradient(135deg,rgba(57,255,20,0.1),rgba(57,255,20,0.03));border:1px solid rgba(57,255,20,0.2);text-align:center}
+.done-banner.show{display:block;animation:pop .35s cubic-bezier(.4,0,.2,1)}
+.done-emo{font-size:28px;margin-bottom:3px}
+.done-title{font-size:15px;font-weight:800;color:var(--neon);letter-spacing:.05em;text-shadow:0 0 20px var(--ng)}
+.done-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.note{border-radius:8px;padding:8px 11px;margin-bottom:5px;font-size:11px;line-height:1.65}
+.note.red{background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.13);border-left:3px solid var(--red);color:#ffbbbb}
+.note.red b{color:var(--red)}
+.note.ok{background:rgba(57,255,20,0.04);border:1px solid rgba(57,255,20,0.1);border-left:3px solid var(--neon);color:#bbffbb}
+.note.ok b{color:var(--neon)}
+.note.tip{background:rgba(255,179,71,0.05);border:1px solid rgba(255,179,71,0.1);border-left:3px solid var(--warn);color:#ffd8a8}
+.note.tip b{color:var(--warn)}
+.zone-bar{display:flex;border-radius:8px;overflow:hidden;height:24px;margin:5px 0 8px}
+.z{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex:1}
+.z1{background:#0a1520;color:#6ab4ff}.z2{background:#081e08;color:var(--neon)}
+.z3{background:#121c06;color:#a3e04c}.z4{background:#1c1406;color:var(--warn)}.z5{background:#1c0808;color:var(--red)}
+.zdesc{font-size:10px;color:var(--muted);line-height:2;margin-bottom:8px}
+.inc-wrap{background:var(--s1);border:1px solid var(--b);border-radius:9px;padding:10px 13px;margin-bottom:8px}
+.inc-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.inc-viz{display:flex;gap:3px;align-items:flex-end;height:46px}
+.inc-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.inc-bar{width:100%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--neon),#1aaa08);opacity:.65}
+.inc-deg{font-size:8px;color:var(--muted);margin-top:2px}
+.hiit-box{background:rgba(255,92,92,0.04);border:1px solid rgba(255,92,92,0.12);border-radius:10px;padding:12px 13px;margin-bottom:8px}
+.hrow{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,92,92,0.07);font-size:11px}
+.hrow:last-child{border-bottom:none}.hl{color:var(--muted)}.hv{font-weight:500}
+.hz{font-size:9px;padding:1px 5px;border-radius:8px;margin-left:3px}
+.hz1{background:#081420;color:var(--blue)}.hz4{background:#1a1000;color:var(--warn)}
+.sched{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.dc{background:var(--s1);border:1px solid var(--b);border-radius:8px;padding:7px 2px;text-align:center}
+.da{font-size:8px;color:var(--muted);margin-bottom:3px;letter-spacing:.04em}
+.dl{font-size:8px;font-weight:700;line-height:1.6}
+.dl.a{color:var(--blue)}.dl.c{color:var(--green)}.dl.b{color:var(--purple)}.dl.w{color:var(--neon)}.dl.h{color:var(--red)}
+.gbox{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:11px 14px;margin-bottom:10px}
+.gr{padding:5px 0;border-bottom:1px solid var(--b);font-size:11px;line-height:1.6;color:#ccc}
+.gr:last-child{border-bottom:none}.gr b{color:var(--warn)}
+.pb{padding-bottom:32px}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+/* =============================================
+   CRAIG'S FITNESS APP — VERSION 6.0
+   ============================================= */
+const APP_VERSION = 'v6.0';
+
+const DAYS=[
+  {key:'mon',label:'MON',title:'Monday',  sub:'Arm Day A · Chest · Shoulders',type:'liftA'},
+  {key:'tue',label:'TUE',title:'Tuesday', sub:'Core & Back · Legs',           type:'core'},
+  {key:'wed',label:'WED',title:'Wednesday',sub:'Zone 2 Walk',                 type:'walk'},
+  {key:'thu',label:'THU',title:'Thursday',sub:'Arm Day B · Chest · Shoulders',type:'liftB'},
+  {key:'fri',label:'FRI',title:'Friday',  sub:'Core & Back · Legs',           type:'core'},
+  {key:'sat',label:'SAT',title:'Saturday',sub:'Zone 2 Walk + HIIT',           type:'hiit'},
+  {key:'sun',label:'SUN',title:'Sunday',  sub:'Zone 2 Walk',                  type:'walk'},
+];
+const VITS_FULL=[
+  {id:'v1',name:'Pure Encapsulations O.N.E. Multivitamin',dose:'1 capsule',hint:'With fatty breakfast — covers zinc 25mg, B-vitamins, antioxidants, CoQ10 50mg included'},
+  {id:'v2',name:'Creatine',dose:'5 g',hint:'Mix in water or food — consistency beats perfect timing. Fully saturates in 3–4 weeks.'},
+  {id:'v3',name:'D3 + K2 (MK-7)',dose:'5,000 IU + 100 mcg',hint:'Fat-soluble — must take with fatty meal. K2 MK-7 directs calcium to bones, away from arteries.'},
+  {id:'v4',name:'B12 Sublingual',dose:'1,000–2,000 mcg',hint:'Place under tongue · fully dissolve · do NOT swallow · bypasses stomach acid for direct absorption'},
+  {id:'v5',name:'Omega-3 EPA+DHA',dose:'3 g · 3 pills',hint:'Sports Research Triple Strength · reduces inflammation, supports heart and muscle recovery'},
+  {id:'v6',name:'CoQ10 Ubiquinol',dose:'200 mg · 1 pill',hint:'Qunol brand · take with D3 and fatty meal · mitochondrial energy + cardiovascular support'},
+];
+const STR_FULL=[
+  {id:'s1',name:'Piriformis Stretch',hint:'30 sec each side · seated or lying · relieves sciatic nerve tension'},
+  {id:'s2',name:'Cat-Cow',hint:'10 slow reps · inhale to arch (cow), exhale to round (cat) · mobilizes the entire spine'},
+  {id:'s3',name:'Hip Flexor Stretch',hint:'30 sec each side · kneeling lunge · tight hip flexors worsen sciatica and lower back pain',isNew:true},
+];
+const ARMA={arm:[{id:'aa1',name:'EZ-Bar Curl',sets:'3',reps:'6–8 reps'},{id:'aa2',name:'Hammer Curl',sets:'2',reps:'10–12 reps'},{id:'aa3',name:'Close-Grip Bench Press',sets:'3',reps:'8–10 reps'}],chest:[{id:'aa4',name:'Flat Bench Press',sets:'3',reps:'8–10 reps'},{id:'aa5',name:'45° Incline Press',sets:'3',reps:'8–10 reps'},{id:'aa6',name:'Dumbbell Fly',sets:'2',reps:'12–15 reps'}],shoulder:[{id:'aa7',name:'Face Pulls',sets:'3',reps:'15 reps'},{id:'aa8',name:'Lateral Raises',sets:'3',reps:'12–15 reps'}]};
+const ARMB={arm:[{id:'ab1',name:'Incline Dumbbell Curl',sets:'3',reps:'10–12 reps'},{id:'ab2',name:'Cable Curl',sets:'2',reps:'12–15 reps'},{id:'ab3',name:'Overhead Tricep Ext.',sets:'3',reps:'10–12 reps'}],chest:[{id:'ab4',name:'Flat Bench Press',sets:'3',reps:'8–10 reps'},{id:'ab5',name:'45° Incline Press',sets:'3',reps:'8–10 reps'},{id:'ab6',name:'Dumbbell Fly',sets:'2',reps:'12–15 reps'}],shoulder:[{id:'ab7',name:'Face Pulls',sets:'3',reps:'15 reps'},{id:'ab8',name:'Lateral Raises',sets:'3',reps:'12–15 reps'}]};
+const CORE={core:[{id:'c1',name:'Forearm Plank',sets:'3',reps:'20–45 sec'},{id:'c2',name:'Dead Bug',sets:'3',reps:'8–10/side'},{id:'c3',name:'Bird Dog',sets:'3',reps:'8–10/side'},{id:'c4',name:'Glute Bridge',sets:'3',reps:'12–15 reps'},{id:'c5',name:'Pallof Press',sets:'3',reps:'10/side'},{id:'c6',name:'Goblet Squat',sets:'3',reps:'10–12 reps'},{id:'c7',name:'Single-Arm DB Row',sets:'3',reps:'8–10/side'},{id:'c8',name:'Reverse Lunge + Rotation',sets:'3',reps:'8–10/side'},{id:'c9',name:'Toe Touches',sets:'3',reps:'12–15 reps'}],legs:[{id:'c10',name:'Romanian Deadlift (RDL)',sets:'3',reps:'10–12 reps',isNew:true},{id:'c11',name:'Dumbbell Sumo Squat',sets:'3',reps:'10–12 reps',isNew:true}]};
+const WALK_CK=[{id:'wk1',name:'Zone 2 Walk Complete',hint:'25–30 min · stay 95–111 bpm · rotate incline 1°→6° each minute'}];
+const HIIT_CK=[{id:'h1',name:'Warm-up Complete',hint:'2 min easy walk · Zone 1 (79–95 bpm)'},{id:'h2',name:'6 Rounds Complete',hint:'30 sec max effort Zone 4–5 / 30 sec easy Zone 1'},{id:'h3',name:'Cool-down Complete',hint:'2 min easy walk · Zone 1'}];
+const NOTES={liftA:[{t:'<b>Close-Grip Bench:</b> Elbows at 45° to torso — never flare wide.',c:'red'},{t:'<b>Face Pulls:</b> Thumbs point behind head, pull to eye level. Protects rotator cuff.',c:'red'},{t:'<b>Dumbbell Fly:</b> Slight elbow bend throughout. Pain at bottom = gone too wide.',c:'red'},{t:'<b>Overload:</b> +1 rep or +2.5 lbs per week. Stop 1–2 reps short of failure.',c:'ok'}],liftB:[{t:'<b>Overhead Tricep Ext:</b> Elbows straight up, close to head. All movement at elbow.',c:'red'},{t:'<b>Incline Curl:</b> Full stretch at bottom — eccentric load is where growth happens.',c:'red'},{t:'<b>Cable Curl:</b> Upper arms pinned still. Squeeze at top, slow on the way down.',c:'red'},{t:'<b>Overload:</b> +1 rep or +2.5 lbs weekly. Always leave 1–2 reps in the tank.',c:'ok'}],core:[{t:'<b>RDL:</b> Push hips back, not down. Neutral spine always — no rounding.',c:'red'},{t:'<b>Sumo Squat:</b> Wide stance, toes out 45°. Drive knees out over toes.',c:'red'},{t:'<b>Dead Bug:</b> Lower back pressed into floor at ALL times. Exhale as you extend.',c:'red'},{t:'<b>Pallof Press:</b> Anti-rotation — resist the pull. Hips and shoulders perfectly square.',c:'red'},{t:'<b>Overload:</b> +1 rep or +5 sec on core. +2.5–5 lbs on RDL & Sumo Squat weekly.',c:'ok'}],cardio:[{t:'<b>Zone 2 is a ceiling:</b> HR above 111 → drop incline or slow pace. Zone 3+ burns glycogen not fat.',c:'red'},{t:'<b>HIIT recovery (Sat):</b> Fatigued or sore → skip HIIT, do Zone 2 only.',c:'red'},{t:'<b>Talk test:</b> Full sentences throughout Zone 2. Can\'t talk = working too hard.',c:'tip'},{t:'<b>Hydration:</b> 16–20 oz water before cardio. Daily goal: half your bodyweight in oz.',c:'tip'}]};
+const META={liftA:'<span class="badge bs">18 sets</span><span class="badge bt">~50 min</span><span class="badge br">90s rest</span>',liftB:'<span class="badge bs">18 sets</span><span class="badge bt">~50 min</span><span class="badge br">90s rest</span>',core:'<span class="badge bs">11 exercises</span><span class="badge bt">~40 min</span><span class="badge br">90s rest</span>',walk:'<span class="badge bt">25–30 min</span><span class="badge bd">Zone 2</span>',hiit:'<span class="badge bt">Walk 25–30 min</span><span class="badge br">HIIT 10 min</span>'};
+const ORDER={liftA:['arm','chest','shoulder'],liftB:['arm','chest','shoulder'],core:['core','legs'],walk:['walk'],hiit:['walk','hiit']};
+const ST={vits:{},strs:{}};
+let activeTab=0;
+
+function initST(){
+  DAYS.forEach(d=>{ST[d.key]={};ST[d.key]['vit-single']=false;ST[d.key]['str-single']=false;getWorkoutItems(d).forEach(i=>ST[d.key][i.id]=false);ST[d.key][d.key+'-bed']=false;});
+  VITS_FULL.forEach(v=>ST.vits[v.id]=false);ST.vits['vbed']=false;
+  STR_FULL.forEach(s=>ST.strs[s.id]=false);
+}
+function getWorkoutItems(day){
+  const items=[];
+  const push=(arr,sec)=>arr.forEach(x=>items.push({...x,id:day.key+'-'+x.id,sec}));
+  if(day.type==='liftA')Object.entries(ARMA).forEach(([s,a])=>push(a,s));
+  else if(day.type==='liftB')Object.entries(ARMB).forEach(([s,a])=>push(a,s));
+  else if(day.type==='core')Object.entries(CORE).forEach(([s,a])=>push(a,s));
+  else if(day.type==='walk')push(WALK_CK,'walk');
+  else if(day.type==='hiit'){push(WALK_CK,'walk');push(HIIT_CK,'hiit');}
+  return items;
+}
+function progDay(key){const ids=Object.keys(ST[key]);return{done:ids.filter(k=>ST[key][k]).length,total:ids.length};}
+function progVits(){const ids=Object.keys(ST.vits);return{done:ids.filter(k=>ST.vits[k]).length,total:ids.length};}
+function progStrs(){const ids=Object.keys(ST.strs);return{done:ids.filter(k=>ST.strs[k]).length,total:ids.length};}
+function chk(){return'<div class="cb"><div class="cb-check"></div></div>';}
+function repsTag(sec,val){const c=sec==='chest'?'et-n':sec==='shoulder'?'et-b':sec==='legs'?'et-p':'et-r';return'<span class="et '+c+'">'+val+'</span>';}
+function ecCls(sec){const m={chest:'chest',shoulder:'shoulder',legs:'legs',walk:'walk',hiit:'hiit',bed:'bed'};return m[sec]||'';}
+function rCard(item,key,stateObj){
+  const done=stateObj[item.id];
+  let tags='';
+  if(item.sets)tags+='<span class="et et-s">'+item.sets+' sets</span>';
+  if(item.reps)tags+=repsTag(item.sec,item.reps);
+  if(item.dose)tags+='<span class="et et-dose">'+item.dose+'</span>';
+  const hint=item.hint?'<div class="ec-hint">'+item.hint+'</div>':'';
+  const newT=item.isNew?'<span class="new-tag">NEW</span>':'';
+  return'<div class="ec '+ecCls(item.sec)+(done?' done':'')+'" data-ctx="'+key+'" data-id="'+item.id+'">'+chk()+'<div class="ec-body"><div class="en">'+item.name+newT+'</div><div class="em">'+tags+'</div>'+hint+'</div></div>';
+}
+function rIncline(){const H=[14,23,32,42,53,65],L=['1°','2°','3°','4°','5°','6°'];return'<div class="inc-wrap"><div class="inc-lbl">Incline rotation per minute — repeat cycle</div><div class="inc-viz">'+H.map((h,i)=>'<div class="inc-col"><div class="inc-bar" style="height:'+h+'px"></div><div class="inc-deg">'+L[i]+'</div></div>').join('')+'</div></div>';}
+function rZones(){return'<div class="zone-bar"><div class="z z1">Z1</div><div class="z z2">Z2★</div><div class="z z3">Z3</div><div class="z z4">Z4</div><div class="z z5">Z5</div></div><div class="zdesc"><span style="color:var(--blue)">Z1 Recovery 79–95</span> · <span style="color:var(--neon)">Z2 Fat Burn 95–111 ★ Walk target</span><br><span style="color:#a3e04c">Z3 Aerobic 111–126</span> · <span style="color:var(--warn)">Z4 Threshold 126–142</span> · <span style="color:var(--red)">Z5 Max 142–158</span></div>';}
+function rHIITBox(){return'<div class="hiit-box"><div class="hrow"><span class="hl">Warm-up</span><span class="hv">2 min easy walk <span class="hz hz1">Z1</span></span></div><div class="hrow"><span class="hl">Work · 6 rounds</span><span class="hv">30 sec max effort <span class="hz hz4">Z4–5</span></span></div><div class="hrow"><span class="hl">Rest · 6 rounds</span><span class="hv">30 sec easy walk <span class="hz hz1">Z1</span></span></div><div class="hrow"><span class="hl">Cool-down</span><span class="hv">2 min easy walk <span class="hz hz1">Z1</span></span></div></div>';}
+
+function rDay(i){
+  const day=DAYS[i];const{key,title,sub,type}=day;
+  const wItems=getWorkoutItems(day);
+  const{done,total}=progDay(key);const pct=total?Math.round(done/total*100):0;
+  const groups={};wItems.forEach(item=>{if(!groups[item.sec])groups[item.sec]=[];groups[item.sec].push(item);});
+  const emo=type==='walk'?'🚶':type==='hiit'?'⚡':'🔥';
+  const doneTitle=(type==='walk'||type==='hiit')?'Cardio Done!':'Workout Complete!';
+  const noteKey=type==='liftA'?'liftA':type==='liftB'?'liftB':type==='core'?'core':(type==='walk'||type==='hiit'?'cardio':null);
+  const vDone=ST[key]['vit-single'];const sDone=ST[key]['str-single'];const bedDone=ST[key][key+'-bed'];
+  const SEC_LBL={arm:'Arms',chest:'Chest',shoulder:'Shoulders',core:'Core & Back',legs:'Legs',walk:'Zone 2 Walk',hiit:'HIIT Protocol'};
+  const SEC_CLS={arm:'def',chest:'neon',shoulder:'blue',core:'def',legs:'legs',walk:'neon',hiit:'red'};
+  let h='<div class="sprog"><div class="sp-row"><span class="sp-title">'+title+'</span><div class="sp-right"><span class="sp-frac" id="frac-'+key+'">'+done+'/'+total+'</span><span class="sp-pct" id="pct-'+key+'">'+pct+'%</span></div></div><div class="sp-sub">'+sub+'</div><div class="sp-bar"><div class="sp-fill" id="fill-'+key+'" style="width:'+pct+'%;'+(pct>0?'box-shadow:0 0 8px var(--ng)':'')+'"></div></div><div class="sp-meta">'+(META[type]||'')+'</div></div>';
+  h+='<div id="dbanner-'+key+'" class="done-banner'+(done===total&&total>0?' show':'')+'"><div class="done-emo">'+emo+'</div><div class="done-title">'+doneTitle+'</div><div class="done-sub">'+done+'/'+total+' checked · Tap Reset Day to start fresh</div></div>';
+  h+='<div class="sec">';
+  h+='<div class="slbl vit"><span>☀️ Vitamins & Breakfast</span></div>';
+  h+='<div class="ec single'+(vDone?' done':'')+'" data-ctx="'+key+'" data-id="vit-single">'+chk()+'<div class="ec-body"><div class="en">Take Morning Vitamins with fatty breakfast</div><div class="ec-hint">See Vitamins tab for full details · D3 &amp; CoQ10 need fatty meal · B12 dissolves under tongue</div></div></div>';
+  h+='<div class="slbl str"><span>Morning Stretch</span></div>';
+  h+='<div class="ec stretch'+(sDone?' done':'')+'" data-ctx="'+key+'" data-id="str-single">'+chk()+'<div class="ec-body"><div class="en">Complete Morning Stretches</div><div class="ec-hint">Piriformis · Cat-Cow · Hip Flexor — See Stretches tab for full details</div></div></div>';
+  (ORDER[type]||[]).forEach(sec=>{
+    if(!groups[sec])return;
+    h+='<div class="slbl '+(SEC_CLS[sec]||'def')+'"><span>'+(SEC_LBL[sec]||sec)+'</span></div>';
+    groups[sec].forEach(item=>h+=rCard(item,key,ST[key]));
+    if(sec==='walk'){h+='<div class="slbl def"><span>Zone Reference</span></div>';h+=rZones();h+=rIncline();}
+    if(sec==='hiit'){h+='<div class="slbl red"><span>Protocol Detail</span></div>';h+=rHIITBox();}
+  });
+  h+='<div class="slbl bed"><span>🌙 Bedtime</span></div>';
+  h+='<div class="ec bed'+(bedDone?' done':'')+'" data-ctx="'+key+'" data-id="'+key+'-bed">'+chk()+'<div class="ec-body"><div class="en">Magnesium Glycinate</div><div class="em"><span class="et et-dose">400 mg</span></div><div class="ec-hint">30–60 min before bed · 8+ hrs after zinc in multivitamin</div></div></div>';
+  if(noteKey){h+='<div class="slbl red"><span>Key Notes</span></div>';NOTES[noteKey].forEach(n=>h+='<div class="note '+n.c+'">'+n.t+'</div>');}
+  h+='</div><div class="pb"></div>';return h;
+}
+
+function rVitsTab(){
+  const{done,total}=progVits();const pct=total?Math.round(done/total*100):0;
+  let h='<div class="sprog"><div class="sp-row"><span class="sp-title">Morning Vitamins</span><div class="sp-right"><span class="sp-frac" id="frac-vits">'+done+'/'+total+'</span><span class="sp-pct" id="pct-vits">'+pct+'%</span></div></div><div class="sp-sub">Take with fatty breakfast · all supplements</div><div class="sp-bar"><div class="sp-fill" id="fill-vits" style="width:'+pct+'%;'+(pct>0?'box-shadow:0 0 8px var(--ng)':'')+'"></div></div></div>';
+  h+='<div id="dbanner-vits" class="done-banner'+(done===total&&total>0?' show':'')+'"><div class="done-emo">✅</div><div class="done-title">Stack Complete!</div><div class="done-sub">All vitamins taken</div></div>';
+  h+='<div class="sec"><div class="slbl vit"><span>☀️ Morning — with fatty breakfast</span></div>';
+  VITS_FULL.forEach(v=>{const d=ST.vits[v.id];h+='<div class="ec vit'+(d?' done':'')+'" data-ctx="vits" data-id="'+v.id+'">'+chk()+'<div class="ec-body"><div class="en">'+v.name+'</div><div class="em"><span class="et et-dose">'+v.dose+'</span></div><div class="ec-hint">'+v.hint+'</div></div></div>';});
+  const bd=ST.vits['vbed'];
+  h+='<div class="slbl bed"><span>🌙 Bedtime</span></div>';
+  h+='<div class="ec bed'+(bd?' done':'')+'" data-ctx="vits" data-id="vbed">'+chk()+'<div class="ec-body"><div class="en">Magnesium Glycinate</div><div class="em"><span class="et et-dose">400 mg</span></div><div class="ec-hint">30–60 min before bed · Glycinate form is gentlest on stomach · 8+ hrs after zinc</div></div></div>';
+  h+='<div class="slbl red"><span>Key Notes</span></div><div class="note red"><b>⚠ Zinc + Magnesium — 8 hours apart minimum:</b> Zinc in multivitamin (morning) and Magnesium at bedtime. Do not change this timing.</div><div class="note red"><b>B12 Sublingual — do NOT swallow:</b> Dissolving under tongue bypasses stomach acid. Swallowing defeats the purpose.</div><div class="note tip"><b>D3 + K2 MK-7:</b> Verify your formula uses MK-7 form of K2. Directs calcium to bones, protects arteries.</div><div class="note tip"><b>Creatine — no cycling needed:</b> 5g/day indefinitely. Fully saturated in 3–4 weeks.</div><div class="note ok"><b>D3 + CoQ10 — take together:</b> Both fat-soluble. Synergistic benefit with a fatty meal.</div></div><div class="pb"></div>';
+  return h;
+}
+
+function rStrsTab(){
+  const{done,total}=progStrs();const pct=total?Math.round(done/total*100):0;
+  let h='<div class="sprog"><div class="sp-row"><span class="sp-title">Morning Stretches</span><div class="sp-right"><span class="sp-frac" id="frac-strs">'+done+'/'+total+'</span><span class="sp-pct" id="pct-strs">'+pct+'%</span></div></div><div class="sp-sub">Do every day before any workout or cardio</div><div class="sp-bar"><div class="sp-fill" id="fill-strs" style="width:'+pct+'%;'+(pct>0?'box-shadow:0 0 8px var(--ng)':'')+'"></div></div></div>';
+  h+='<div id="dbanner-strs" class="done-banner'+(done===total&&total>0?' show':'')+'"><div class="done-emo">🧘</div><div class="done-title">Stretch Complete!</div><div class="done-sub">Great start to the day</div></div>';
+  h+='<div class="sec"><div class="slbl str"><span>Daily Morning Routine</span></div>';
+  STR_FULL.forEach(s=>{const d=ST.strs[s.id];const newT=s.isNew?'<span class="new-tag">NEW</span>':'';h+='<div class="ec stretch'+(d?' done':'')+'" data-ctx="strs" data-id="'+s.id+'">'+chk()+'<div class="ec-body"><div class="en">'+s.name+newT+'</div><div class="ec-hint">'+s.hint+'</div></div></div>';});
+  h+='<div class="slbl red"><span>Key Notes</span></div><div class="note red"><b>Piriformis Stretch:</b> Sits directly over the sciatic nerve. Keeping it loose is your #1 defense against sciatica flare-ups.</div><div class="note tip"><b>Cat-Cow:</b> 10 slow reps with full breath. Inhale to arch, exhale to round. Lubricates every spinal disc.</div><div class="note red"><b>Hip Flexor Stretch:</b> Tight hip flexors tilt the pelvis and directly aggravate the sciatic nerve. Non-negotiable daily movement.</div><div class="note ok"><b>Total time:</b> Under 4 minutes. Do it every day — workout days and rest days alike.</div></div><div class="pb"></div>';
+  return h;
+}
+
+function rCardio(){
+  return'<div class="sec" style="padding-top:12px"><div style="font-size:15px;font-weight:700;margin-bottom:10px">Cardio Reference</div><div class="slbl def"><span>Heart Rate Zones · Est. Max HR 158 bpm</span></div>'+rZones()+'<div class="slbl neon"><span>Zone 2 Walk · Wed / Sat / Sun · 25–30 min</span></div><div style="background:rgba(57,255,20,0.04);border:1px solid rgba(57,255,20,0.1);border-radius:10px;padding:12px 13px;margin-bottom:8px"><div class="hrow" style="border-bottom:1px solid rgba(57,255,20,0.07)"><span class="hl">Target HR</span><span class="hv" style="color:var(--neon)">95–111 bpm · Zone 2</span></div><div class="hrow" style="border-bottom:1px solid rgba(57,255,20,0.07)"><span class="hl">Talk test</span><span class="hv">Full sentences only — if you can\'t, drop incline or pace</span></div><div class="hrow" style="border-bottom:none"><span class="hl">Incline</span><span class="hv">Rotate 1°→6° each minute, repeat cycle</span></div></div>'+rIncline()+'<div class="slbl red"><span>HIIT · Saturday Only · after walk</span></div>'+rHIITBox()+'<div class="slbl red"><span>Key Notes</span></div>'+NOTES.cardio.map(n=>'<div class="note '+n.c+'">'+n.t+'</div>').join('')+'</div><div class="pb"></div>';
+}
+
+function rSchedule(){
+  return'<div class="sec" style="padding-top:12px"><div style="font-size:15px;font-weight:700;margin-bottom:10px">Weekly Schedule</div><div class="sched"><div class="dc"><div class="da">MON</div><div class="dl a">Arm A</div><div class="dl a">+Chest</div></div><div class="dc"><div class="da">TUE</div><div class="dl c">Core</div><div class="dl c">+Legs</div></div><div class="dc"><div class="da">WED</div><div class="dl w">Walk</div><div class="dl w">Zone 2</div></div><div class="dc"><div class="da">THU</div><div class="dl b">Arm B</div><div class="dl b">+Chest</div></div><div class="dc"><div class="da">FRI</div><div class="dl c">Core</div><div class="dl c">+Legs</div></div><div class="dc"><div class="da">SAT</div><div class="dl w">Walk</div><div class="dl h">+HIIT</div></div><div class="dc"><div class="da">SUN</div><div class="dl w">Walk</div><div class="dl w">Zone 2</div></div></div><div class="note ok" style="margin-bottom:12px"><b>Every day starts with:</b> Vitamins &amp; fatty breakfast → Morning Stretches → then workout or cardio</div><div class="slbl warn"><span>Golden Rules</span></div><div class="gbox"><div class="gr"><b>Arms &amp; Chest</b> — +1 rep or +2.5 lbs every week</div><div class="gr"><b>Core &amp; Legs</b> — +1 rep or +5 sec weekly · +2.5–5 lbs on RDL &amp; Sumo Squat</div><div class="gr"><b>Walk</b> — stay Zone 2 (95–111 bpm), rotate incline 1°→6° each minute</div><div class="gr"><b>HIIT</b> — Saturday only, 10 min total after walk, push Zone 4–5 on work intervals</div><div class="gr"><b>Recovery</b> — if sore or fatigued on Saturday, skip HIIT and walk Zone 2 only</div></div><div class="slbl def"><span>Supplement Timing</span></div><div class="note red"><b>⚠ Zinc + Magnesium — 8 hours apart:</b> Zinc in multivitamin (morning) and Magnesium at bedtime. Do not change this timing.</div><div class="note tip"><b>D3 + CoQ10:</b> Both fat-soluble — take with fatty breakfast for best absorption.</div><div class="note tip"><b>B12 sublingual:</b> Place under tongue, fully dissolve. Do NOT swallow.</div></div><div class="pb"></div>';
+}
+
+function render(){
+  const tabDefs=[...DAYS.map((d,i)=>({label:d.label,i,badge:true})),{label:'VITAMINS',i:7,badge:true},{label:'STRETCHES',i:8,badge:true},{label:'CARDIO',i:9,badge:false},{label:'SCHEDULE',i:10,badge:false}];
+  document.getElementById('app').innerHTML=
+    '<div class="hdr"><div class="hdr-row"><div>'+
+    '<div class="logo">Craig\'s Fitness</div>'+
+    '<div class="logo-sub">Daily Program</div>'+
+    '<div class="version-pill">'+APP_VERSION+'</div>'+
+    '</div><button class="reset-btn" id="resetbtn">↺ Reset Day</button></div></div>'+
+    '<div class="tabs" id="tabs">'+tabDefs.map(t=>'<div class="tab'+(t.i===activeTab?' active':'')+'" data-ti="'+t.i+'">'+t.label+(t.badge?'<span class="tbadge" id="tb'+t.i+'"></span>':'')+'</div>').join('')+'</div>'+
+    DAYS.map((d,i)=>'<div id="panel-'+i+'" class="panel'+(activeTab===i?' active':'')+'">'+rDay(i)+'</div>').join('')+
+    '<div id="panel-7" class="panel'+(activeTab===7?' active':'')+'">'+rVitsTab()+'</div>'+
+    '<div id="panel-8" class="panel'+(activeTab===8?' active':'')+'">'+rStrsTab()+'</div>'+
+    '<div id="panel-9" class="panel'+(activeTab===9?' active':'')+'">'+rCardio()+'</div>'+
+    '<div id="panel-10" class="panel'+(activeTab===10?' active':'')+'">'+rSchedule()+'</div>';
+  updateAllBadges();wireEvents();
+}
+
+function wireEvents(){
+  document.getElementById('tabs').addEventListener('click',e=>{const t=e.target.closest('[data-ti]');if(t)switchTab(parseInt(t.dataset.ti));});
+  document.getElementById('resetbtn').addEventListener('click',resetCurrent);
+  document.getElementById('app').addEventListener('click',e=>{const ec=e.target.closest('.ec[data-ctx][data-id]');if(ec)toggle(ec.dataset.ctx,ec.dataset.id,ec);});
+}
+function switchTab(i){activeTab=i;document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));}
+function toggle(ctx,id,el){
+  if(ctx==='vits'){ST.vits[id]=!ST.vits[id];el.classList.toggle('done',ST.vits[id]);updateVitsProg();}
+  else if(ctx==='strs'){ST.strs[id]=!ST.strs[id];el.classList.toggle('done',ST.strs[id]);updateStrsProg();}
+  else{ST[ctx][id]=!ST[ctx][id];el.classList.toggle('done',ST[ctx][id]);updateDayProg(ctx);}
+}
+function updateDayProg(key){const{done,total}=progDay(key);const pct=total?Math.round(done/total*100):0;const fill=document.getElementById('fill-'+key);const pctEl=document.getElementById('pct-'+key);const fracEl=document.getElementById('frac-'+key);if(fill){fill.style.width=pct+'%';fill.style.boxShadow=pct>0?'0 0 8px var(--ng)':'';}if(pctEl)pctEl.textContent=pct+'%';if(fracEl)fracEl.textContent=done+'/'+total;const banner=document.getElementById('dbanner-'+key);if(banner)banner.classList.toggle('show',done===total&&total>0);const dayIdx=DAYS.findIndex(d=>d.key===key);if(dayIdx>=0)updateBadge(dayIdx,done,total);}
+function updateVitsProg(){const{done,total}=progVits();const pct=total?Math.round(done/total*100):0;const fill=document.getElementById('fill-vits');const pctEl=document.getElementById('pct-vits');const fracEl=document.getElementById('frac-vits');if(fill){fill.style.width=pct+'%';fill.style.boxShadow=pct>0?'0 0 8px var(--ng)':'';}if(pctEl)pctEl.textContent=pct+'%';if(fracEl)fracEl.textContent=done+'/'+total;const banner=document.getElementById('dbanner-vits');if(banner)banner.classList.toggle('show',done===total&&total>0);updateBadge(7,done,total);}
+function updateStrsProg(){const{done,total}=progStrs();const pct=total?Math.round(done/total*100):0;const fill=document.getElementById('fill-strs');const pctEl=document.getElementById('pct-strs');const fracEl=document.getElementById('frac-strs');if(fill){fill.style.width=pct+'%';fill.style.boxShadow=pct>0?'0 0 8px var(--ng)':'';}if(pctEl)pctEl.textContent=pct+'%';if(fracEl)fracEl.textContent=done+'/'+total;const banner=document.getElementById('dbanner-strs');if(banner)banner.classList.toggle('show',done===total&&total>0);updateBadge(8,done,total);}
+function updateBadge(i,done,total){const dot=document.getElementById('tb'+i);if(!dot)return;if(done===total&&total>0){dot.textContent='✓';dot.classList.add('on','full');}else if(done>0){dot.textContent=done;dot.classList.add('on');dot.classList.remove('full');}else{dot.textContent='';dot.classList.remove('on','full');}}
+function updateAllBadges(){DAYS.forEach((d,i)=>{const{done,total}=progDay(d.key);updateBadge(i,done,total);});const vp=progVits();updateBadge(7,vp.done,vp.total);const sp=progStrs();updateBadge(8,sp.done,sp.total);}
+function resetCurrent(){
+  if(activeTab>=9)return;
+  if(activeTab===7){Object.keys(ST.vits).forEach(k=>ST.vits[k]=false);document.getElementById('panel-7').innerHTML=rVitsTab();updateBadge(7,0,Object.keys(ST.vits).length);}
+  else if(activeTab===8){Object.keys(ST.strs).forEach(k=>ST.strs[k]=false);document.getElementById('panel-8').innerHTML=rStrsTab();updateBadge(8,0,Object.keys(ST.strs).length);}
+  else{const key=DAYS[activeTab].key;Object.keys(ST[key]).forEach(k=>ST[key][k]=false);document.getElementById('panel-'+activeTab).innerHTML=rDay(activeTab);updateBadge(activeTab,0,Object.keys(ST[key]).length);}
+  wireEvents();
+}
+initST();render();
+</script>
+</body>
+</html>
